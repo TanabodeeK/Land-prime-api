@@ -5,7 +5,7 @@ import jwt from "jsonwebtoken";
 
 export const register = async (req, res, next) => {
   try {
-    const { firstName, lastName, email, password, phone, address} = req.body;
+    const { firstName, lastName, email, password, phone, address,role } = req.body;
     console.log(req.body);
     const user = await prisma.user.findFirst({
       where: {
@@ -14,7 +14,7 @@ export const register = async (req, res, next) => {
     });
     if (user) {
       createError(400, "User already exist !");
-      res.status(400).json({message : "User already exist!"})
+      res.status(400).json({ message: "User already exist!" });
     }
     const hash = bcrypt.hashSync(password, 10);
 
@@ -26,6 +26,7 @@ export const register = async (req, res, next) => {
         password: hash,
         phone: phone,
         address: address,
+        role : role
       },
     });
     res
@@ -54,7 +55,7 @@ export const login = async (req, res, next) => {
     }
     const payload = {
       id: user.id,
-      role : user.role,
+      role: user.role,
     };
     const token = jwt.sign(payload, process.env.SECRET, {
       expiresIn: "1d",
@@ -62,7 +63,7 @@ export const login = async (req, res, next) => {
     res.status(200).json({
       id: user.id,
       email: user.email,
-      role : user.role,
+      role: user.role,
       accessToken: token,
     });
   } catch (error) {

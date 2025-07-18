@@ -36,6 +36,7 @@ enum Role {
 
 model LandDetails {
   id       Int        @id @default(autoincrement())
+  detail   String?
   landtype Type
   area     Float
   location String

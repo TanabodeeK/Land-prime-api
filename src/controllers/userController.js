@@ -6,7 +6,7 @@ export const createPost = async (req, res, next) => {
   const imageUrls = req.files?.map((file) => file.path);
 
   try {
-    const { landtype, area, location, price, lat, lng } = req.body;
+    const { landtype, detail, area, location, price, lat, lng } = req.body;
     // Assume req.files is an array of files from multer
     let images;
 
@@ -14,6 +14,7 @@ export const createPost = async (req, res, next) => {
     const createdPost = await prisma.landDetails.create({
       data: {
         landtype,
+        detail,
         area: parseFloat(area),
         location,
         price: parseFloat(price),
@@ -106,12 +107,15 @@ export const getAllPost = async (req, res, next) => {
 export const getPostById = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const post = await prisma.landDetails.findMany({
+    const post = await prisma.landDetails.findFirst({
       where: {
         id: Number(id),
-        userId: { connect: { id: req.user.id } },
+      },
+      include: {
+        image: true,
       },
     });
+    res.status(200).json({ property: post });
   } catch (error) {
     console.log(error);
     next(error);
